@@ -1,16 +1,16 @@
 module Game where
 
+import Array
+import Mouse
+import Random
+import Text
+import Window
+import Color            exposing (..)
 import Graphics.Element exposing (..)
 import Graphics.Collage exposing (..)
-import Color exposing (..)
-import Mouse
-import Window
-import Text
-import Array
-import Random
-import List exposing (..)
-import Signal exposing ((<~), (~), sampleOn, foldp)
-import Time exposing (..)
+import List             exposing (..)
+import Signal           exposing ((<~), (~), sampleOn, foldp)
+import Time             exposing (..)
 
 -- CONFIG
 speed             = 500

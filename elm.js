@@ -768,129 +768,56 @@ Elm.Game.make = function (_elm) {
    $Random = Elm.Random.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm),
    $Time = Elm.Time.make(_elm),
    $Window = Elm.Window.make(_elm);
-   var seedFromTime = function (t) {
-      return $Random.initialSeed($Basics.round(t));
-   };
-   var center = function (_v0) {
+   var tf = F3(function (y,
+   scl,
+   str) {
+      return $Graphics$Collage.move({ctor: "_Tuple2"
+                                    ,_0: 0
+                                    ,_1: y})($Graphics$Collage.scale(scl)($Graphics$Collage.text($Text.color($Color.gray)($Text.fromString(str)))));
+   });
+   var stepPlayer = F2(function (_v0,
+   p) {
       return function () {
          switch (_v0.ctor)
          {case "_Tuple2":
-            return {ctor: "_Tuple2"
-                   ,_0: _v0._0 / 2 | 0
-                   ,_1: _v0._1 / 2 | 0};}
-         _U.badCase($moduleName,
-         "on line 79, column 18 to 32");
-      }();
-   };
-   var relativeMouse = F2(function (_v4,
-   _v5) {
-      return function () {
-         switch (_v5.ctor)
-         {case "_Tuple2":
-            return function () {
-                 switch (_v4.ctor)
-                 {case "_Tuple2":
-                    return {ctor: "_Tuple2"
-                           ,_0: _v4._0 - _v5._0
-                           ,_1: 0 - (_v4._1 - _v5._1)};}
-                 _U.badCase($moduleName,
-                 "on line 76, column 34 to 51");
-              }();}
-         _U.badCase($moduleName,
-         "on line 76, column 34 to 51");
-      }();
-   });
-   var vecMulS = F2(function (_v12,
-   t) {
-      return function () {
-         switch (_v12.ctor)
-         {case "_Tuple2":
-            return {ctor: "_Tuple2"
-                   ,_0: _v12._0 * t
-                   ,_1: _v12._1 * t};}
-         _U.badCase($moduleName,
-         "on line 73, column 20 to 32");
-      }();
-   });
-   var vecLen = function (_v16) {
-      return function () {
-         switch (_v16.ctor)
-         {case "_Tuple2":
-            return $Basics.sqrt(_v16._0 * _v16._0 + _v16._1 * _v16._1);}
-         _U.badCase($moduleName,
-         "on line 70, column 16 to 35");
-      }();
-   };
-   var vecSub = F2(function (_v20,
-   _v21) {
-      return function () {
-         switch (_v21.ctor)
-         {case "_Tuple2":
-            return function () {
-                 switch (_v20.ctor)
-                 {case "_Tuple2":
-                    return {ctor: "_Tuple2"
-                           ,_0: _v20._0 - _v21._0
-                           ,_1: _v20._1 - _v21._1};}
-                 _U.badCase($moduleName,
-                 "on line 67, column 29 to 45");
-              }();}
-         _U.badCase($moduleName,
-         "on line 67, column 29 to 45");
-      }();
-   });
-   var vecAdd = F2(function (_v28,
-   _v29) {
-      return function () {
-         switch (_v29.ctor)
-         {case "_Tuple2":
-            return function () {
-                 switch (_v28.ctor)
-                 {case "_Tuple2":
-                    return {ctor: "_Tuple2"
-                           ,_0: _v28._0 + _v29._0
-                           ,_1: _v28._1 + _v29._1};}
-                 _U.badCase($moduleName,
-                 "on line 64, column 29 to 45");
-              }();}
-         _U.badCase($moduleName,
-         "on line 64, column 29 to 45");
-      }();
-   });
-   var stepPlayer = F2(function (_v36,
-   p) {
-      return function () {
-         switch (_v36.ctor)
-         {case "_Tuple2":
             return _U.replace([["pos"
                                ,{ctor: "_Tuple2"
-                                ,_0: $Basics.toFloat(_v36._0)
-                                ,_1: $Basics.toFloat(_v36._1)}]],
+                                ,_0: $Basics.toFloat(_v0._0)
+                                ,_1: $Basics.toFloat(_v0._1)}]],
               p);}
          _U.badCase($moduleName,
-         "on line 61, column 22 to 59");
+         "on line 150, column 22 to 59");
       }();
    });
-   var stepPill = F2(function (t,
-   p) {
-      return _U.replace([["pos"
-                         ,vecAdd(p.pos)(A2(vecMulS,
-                         p.vel,
-                         t))]],
-      p);
-   });
+   var clickStart = function (event) {
+      return function () {
+         switch (event.ctor)
+         {case "Click": return true;}
+         return false;
+      }();
+   };
+   var Click = {ctor: "Click"};
    var Add = function (a) {
       return {ctor: "Add",_0: a};
    };
    var Tick = function (a) {
       return {ctor: "Tick",_0: a};
    };
-   var Game = F2(function (a,b) {
+   var Over = {ctor: "Over"};
+   var Play = {ctor: "Play"};
+   var Start = {ctor: "Start"};
+   var Game = F4(function (a,
+   b,
+   c,
+   d) {
       return {_: {}
              ,pills: b
-             ,player: a};
+             ,player: a
+             ,score: c
+             ,state: d};
    });
    var Pill = F4(function (a,
    b,
@@ -902,7 +829,104 @@ Elm.Game.make = function (_elm) {
              ,rad: c
              ,vel: b};
    });
-   var delta = $Time.fps(60);
+   var seedFromTime = function (t) {
+      return $Random.initialSeed($Basics.round(t));
+   };
+   var center = function (_v5) {
+      return function () {
+         switch (_v5.ctor)
+         {case "_Tuple2":
+            return {ctor: "_Tuple2"
+                   ,_0: _v5._0 / 2 | 0
+                   ,_1: _v5._1 / 2 | 0};}
+         _U.badCase($moduleName,
+         "on line 44, column 18 to 32");
+      }();
+   };
+   var relativeMouse = F2(function (_v9,
+   _v10) {
+      return function () {
+         switch (_v10.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (_v9.ctor)
+                 {case "_Tuple2":
+                    return {ctor: "_Tuple2"
+                           ,_0: _v9._0 - _v10._0
+                           ,_1: 0 - (_v9._1 - _v10._1)};}
+                 _U.badCase($moduleName,
+                 "on line 41, column 34 to 51");
+              }();}
+         _U.badCase($moduleName,
+         "on line 41, column 34 to 51");
+      }();
+   });
+   var vecMulS = F2(function (_v17,
+   t) {
+      return function () {
+         switch (_v17.ctor)
+         {case "_Tuple2":
+            return {ctor: "_Tuple2"
+                   ,_0: _v17._0 * t
+                   ,_1: _v17._1 * t};}
+         _U.badCase($moduleName,
+         "on line 38, column 20 to 32");
+      }();
+   });
+   var vecLen = function (_v21) {
+      return function () {
+         switch (_v21.ctor)
+         {case "_Tuple2":
+            return $Basics.sqrt(_v21._0 * _v21._0 + _v21._1 * _v21._1);}
+         _U.badCase($moduleName,
+         "on line 35, column 16 to 35");
+      }();
+   };
+   var vecSub = F2(function (_v25,
+   _v26) {
+      return function () {
+         switch (_v26.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (_v25.ctor)
+                 {case "_Tuple2":
+                    return {ctor: "_Tuple2"
+                           ,_0: _v25._0 - _v26._0
+                           ,_1: _v25._1 - _v26._1};}
+                 _U.badCase($moduleName,
+                 "on line 32, column 29 to 45");
+              }();}
+         _U.badCase($moduleName,
+         "on line 32, column 29 to 45");
+      }();
+   });
+   var vecAdd = F2(function (_v33,
+   _v34) {
+      return function () {
+         switch (_v34.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (_v33.ctor)
+                 {case "_Tuple2":
+                    return {ctor: "_Tuple2"
+                           ,_0: _v33._0 + _v34._0
+                           ,_1: _v33._1 + _v34._1};}
+                 _U.badCase($moduleName,
+                 "on line 29, column 29 to 45");
+              }();}
+         _U.badCase($moduleName,
+         "on line 29, column 29 to 45");
+      }();
+   });
+   var stepPill = F2(function (t,
+   p) {
+      return _U.replace([["pos"
+                         ,vecAdd(p.pos)(A2(vecMulS,
+                         p.vel,
+                         t))]],
+      p);
+   });
+   var delta = $Time.fps(50);
    var input = A2($Signal._op["~"],
    A2($Signal._op["<~"],
    F2(function (v0,v1) {
@@ -921,10 +945,12 @@ Elm.Game.make = function (_elm) {
    A2($Signal.map,
    center,
    $Window.dimensions))));
-   var interval = $Time.every($Time.second * 2);
+   var pillSize = 15;
+   var playerSize = pillSize;
+   var boardSize = 500;
    var $ = {ctor: "_Tuple2"
-           ,_0: 400
-           ,_1: 400},
+           ,_0: boardSize
+           ,_1: boardSize},
    bWidth = $._0,
    bHeight = $._1;
    var $ = {ctor: "_Tuple2"
@@ -932,22 +958,91 @@ Elm.Game.make = function (_elm) {
            ,_1: bHeight / 2},
    hWidth = $._0,
    hHeight = $._1;
+   var randX = function (sig) {
+      return function () {
+         var coord = function (t) {
+            return $Basics.fst($Random.generate(A2($Random.$float,
+            0 - hWidth,
+            hWidth))(seedFromTime(t)));
+         };
+         return A2($Signal.map,
+         coord,
+         sig);
+      }();
+   };
+   var render = F2(function (_v41,
+   g) {
+      return function () {
+         switch (_v41.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var txts = function () {
+                    var _v45 = g.state;
+                    switch (_v45.ctor)
+                    {case "Over":
+                       return _L.fromArray([A3(tf,
+                                           70,
+                                           6,
+                                           "Game Over")
+                                           ,A3(tf,
+                                           0,
+                                           4,
+                                           $Basics.toString(g.score))
+                                           ,A3(tf,
+                                           -50,
+                                           2,
+                                           "Click to restart")]);
+                       case "Play":
+                       return _L.fromArray([A3(tf,
+                         0,
+                         4,
+                         $Basics.toString(g.score))]);
+                       case "Start":
+                       return _L.fromArray([A3(tf,
+                                           70,
+                                           6,
+                                           "BluePiLL")
+                                           ,A3(tf,
+                                           -50,
+                                           2,
+                                           "Click to start")]);}
+                    _U.badCase($moduleName,
+                    "between lines 163 and 170");
+                 }();
+                 var formPill = function (_v46) {
+                    return function () {
+                       return $Graphics$Collage.move(_v46.pos)($Graphics$Collage.filled(_v46.color)($Graphics$Collage.circle(_v46.rad)));
+                    }();
+                 };
+                 var forms = A2($Basics._op["++"],
+                 txts,
+                 $List.map(formPill)(A2($List._op["::"],
+                 g.player,
+                 g.pills)));
+                 return $Graphics$Element.color($Color.lightGray)(A3($Graphics$Element.container,
+                 _v41._0,
+                 _v41._1,
+                 $Graphics$Element.middle)($Graphics$Element.color($Color.white)(A3($Graphics$Collage.collage,
+                 bWidth,
+                 bHeight,
+                 forms))));
+              }();}
+         _U.badCase($moduleName,
+         "between lines 161 and 175");
+      }();
+   });
+   var speed = 500;
+   var spawnInterval = 57 / speed;
+   var interval = $Time.every($Time.second * spawnInterval);
    var defaultPill = {_: {}
                      ,color: $Color.lightRed
                      ,pos: {ctor: "_Tuple2"
                            ,_0: 0
                            ,_1: hHeight}
-                     ,rad: 15
+                     ,rad: pillSize
                      ,vel: {ctor: "_Tuple2"
                            ,_0: 0
-                           ,_1: -150}};
-   var defaultPlayer = _U.replace([["pos"
-                                   ,{ctor: "_Tuple2",_0: 0,_1: 0}]
-                                  ,["color",$Color.black]],
-   defaultPill);
-   var defaultGame = {_: {}
-                     ,pills: _L.fromArray([])
-                     ,player: defaultPlayer};
+                           ,_1: 0 - speed}};
    var randColor = function (sig) {
       return function () {
          var getColor = function (i) {
@@ -964,108 +1059,145 @@ Elm.Game.make = function (_elm) {
          sig);
       }();
    };
-   var newPill = function (x) {
-      return _U.replace([["pos"
+   var defaultPlayer = _U.replace([["pos"
+                                   ,{ctor: "_Tuple2"
+                                    ,_0: 0
+                                    ,_1: 0 - hHeight - defaultPill.rad}]
+                                  ,["rad",playerSize]
+                                  ,["color",$Color.black]],
+   defaultPill);
+   var defaultGame = {_: {}
+                     ,pills: _L.fromArray([])
+                     ,player: defaultPlayer
+                     ,score: 0
+                     ,state: Start};
+   var stepPlay = F2(function (event,
+   g) {
+      return function () {
+         switch (event.ctor)
+         {case "Add":
+            return _U.replace([["pills"
+                               ,A2($List._op["::"],
+                               event._0,
+                               g.pills)]],
+              g);
+            case "Click": return g;
+            case "Tick":
+            switch (event._0.ctor)
+              {case "_Tuple2":
+                 return function () {
+                      var out = function () {
+                         var $ = event._0._1,
+                         x = $._0,
+                         y = $._1;
+                         return _U.cmp($Basics.abs($Basics.toFloat(x)),
+                         hWidth) > 0 || _U.cmp($Basics.abs($Basics.toFloat(y)),
+                         hHeight) > 0;
+                      }();
+                      var unculed = A2($List.filter,
+                      function (_v53) {
+                         return function () {
+                            return _U.cmp($Basics.snd(_v53.pos),
+                            $Basics.negate(hHeight)) > -1;
+                         }();
+                      },
+                      g.pills);
+                      var hit = function (pill) {
+                         return _U.cmp(vecLen(A2(vecSub,
+                         g.player.pos,
+                         pill.pos)),
+                         g.player.rad + pill.rad) < 0;
+                      };
+                      var untouched = A2($List.filter,
+                      function ($) {
+                         return $Basics.not(hit($));
+                      },
+                      unculed);
+                      var touched = A2($List.filter,
+                      hit,
+                      unculed);
+                      var hitColor = function (c) {
+                         return $Basics.not($List.isEmpty(A2($List.filter,
+                         function (_v55) {
+                            return function () {
+                               return _U.eq(_v55.color,c);
+                            }();
+                         },
+                         touched)));
+                      };
+                      var hitBlue = hitColor($Color.lightBlue);
+                      var g$ = _U.replace([["player"
+                                           ,A2(stepPlayer,
+                                           event._0._1,
+                                           g.player)]
+                                          ,["pills"
+                                           ,A2($List.map,
+                                           stepPill(event._0._0),
+                                           untouched)]
+                                          ,["score"
+                                           ,hitBlue ? g.score + 1 : g.score]],
+                      g);
+                      var hitRed = hitColor($Color.lightRed);
+                      return hitRed || out ? _U.replace([["score"
+                                                         ,g$.score]
+                                                        ,["state",Over]],
+                      defaultGame) : g$;
+                   }();}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 110 and 127");
+      }();
+   });
+   var stepGame = F2(function (event,
+   _v57) {
+      return function () {
+         return function () {
+            var playGame = _U.replace([["state"
+                                       ,Play]],
+            defaultGame);
+            var waitClick = clickStart(event) ? playGame : _v57;
+            return function () {
+               var _v59 = _v57.state;
+               switch (_v59.ctor)
+               {case "Over": return waitClick;
+                  case "Play": return A2(stepPlay,
+                    event,
+                    _v57);
+                  case "Start": return waitClick;}
+               _U.badCase($moduleName,
+               "between lines 140 and 143");
+            }();
+         }();
+      }();
+   });
+   var newPill = F2(function (x,
+   col) {
+      return _U.replace([["color"
+                         ,col]
+                        ,["pos"
                          ,{ctor: "_Tuple2"
                           ,_0: x
                           ,_1: hHeight}]],
       defaultPill);
-   };
-   var stepGame = F2(function (event,
-   _v40) {
-      return function () {
-         return function () {
-            switch (event.ctor)
-            {case "Add":
-               return _U.replace([["pills"
-                                  ,A2($List._op["::"],
-                                  event._0,
-                                  _v40.pills)]],
-                 _v40);
-               case "Tick":
-               switch (event._0.ctor)
-                 {case "_Tuple2":
-                    return function () {
-                         var unculed = A2($List.filter,
-                         function (_v47) {
-                            return function () {
-                               return _U.cmp($Basics.snd(_v47.pos),
-                               $Basics.negate(hHeight)) > -1;
-                            }();
-                         },
-                         _v40.pills);
-                         var hit = function (pill) {
-                            return _U.cmp(vecLen(A2(vecSub,
-                            _v40.player.pos,
-                            pill.pos)),
-                            _v40.player.rad + pill.rad) < 0;
-                         };
-                         var untouched = A2($List.filter,
-                         function ($) {
-                            return $Basics.not(hit($));
-                         },
-                         unculed);
-                         return _U.replace([["player"
-                                            ,A2(stepPlayer,
-                                            event._0._1,
-                                            _v40.player)]
-                                           ,["pills"
-                                            ,A2($List.map,
-                                            stepPill(event._0._0),
-                                            untouched)]],
-                         _v40);
-                      }();}
-                 break;}
-            _U.badCase($moduleName,
-            "between lines 46 and 54");
-         }();
-      }();
    });
-   var randX = function (sig) {
-      return function () {
-         var coord = function (t) {
-            return $Basics.fst($Random.generate(A2($Random.$float,
-            0 - hWidth,
-            hWidth))(seedFromTime(t)));
-         };
-         return A2($Signal.map,
-         coord,
-         sig);
-      }();
-   };
-   var event = A2($Signal.merge,
-   A2($Signal.map,Tick,input),
-   $Signal.map(function ($) {
-      return Add(newPill($));
-   })(randX(interval)));
-   var render = F2(function (_v49,
-   game) {
-      return function () {
-         switch (_v49.ctor)
-         {case "_Tuple2":
-            return function () {
-                 var formPill = function (_v53) {
-                    return function () {
-                       return $Graphics$Collage.move(_v53.pos)($Graphics$Collage.filled(_v53.color)($Graphics$Collage.circle(_v53.rad)));
-                    }();
-                 };
-                 var forms = A2($List._op["::"],
-                 formPill(game.player),
-                 A2($List.map,
-                 formPill,
-                 game.pills));
-                 return $Graphics$Element.color($Color.lightGray)(A3($Graphics$Element.container,
-                 _v49._0,
-                 _v49._1,
-                 $Graphics$Element.middle)($Graphics$Element.color($Color.white)(A3($Graphics$Collage.collage,
-                 bWidth,
-                 bHeight,
-                 forms))));
-              }();}
-         _U.badCase($moduleName,
-         "between lines 83 and 90");
-      }();
-   });
+   var event = $Signal.mergeMany(_L.fromArray([A2($Signal.map,
+                                              Tick,
+                                              input)
+                                              ,A3($Signal.map2,
+                                              F2(function (x,col) {
+                                                 return Add(A2(newPill,
+                                                 x,
+                                                 col));
+                                              }),
+                                              randX(interval),
+                                              randColor(interval))
+                                              ,A2($Signal.map,
+                                              function (_v60) {
+                                                 return function () {
+                                                    return Click;
+                                                 }();
+                                              },
+                                              $Mouse.clicks)]));
    var main = A2($Signal._op["~"],
    A2($Signal._op["<~"],
    render,
@@ -1075,35 +1207,47 @@ Elm.Game.make = function (_elm) {
    defaultGame,
    event));
    _elm.Game.values = {_op: _op
+                      ,speed: speed
+                      ,boardSize: boardSize
+                      ,pillSize: pillSize
+                      ,playerSize: playerSize
+                      ,spawnInterval: spawnInterval
+                      ,interval: interval
+                      ,delta: delta
                       ,bHeight: bHeight
                       ,bWidth: bWidth
                       ,hHeight: hHeight
                       ,hWidth: hWidth
-                      ,interval: interval
-                      ,delta: delta
-                      ,Pill: Pill
-                      ,Game: Game
-                      ,Tick: Tick
-                      ,Add: Add
-                      ,defaultPill: defaultPill
-                      ,defaultPlayer: defaultPlayer
-                      ,defaultGame: defaultGame
-                      ,newPill: newPill
-                      ,stepGame: stepGame
-                      ,stepPill: stepPill
-                      ,stepPlayer: stepPlayer
                       ,vecAdd: vecAdd
                       ,vecSub: vecSub
                       ,vecLen: vecLen
                       ,vecMulS: vecMulS
                       ,relativeMouse: relativeMouse
                       ,center: center
-                      ,render: render
                       ,input: input
                       ,randX: randX
                       ,randColor: randColor
                       ,seedFromTime: seedFromTime
                       ,event: event
+                      ,Pill: Pill
+                      ,Game: Game
+                      ,Start: Start
+                      ,Play: Play
+                      ,Over: Over
+                      ,Tick: Tick
+                      ,Add: Add
+                      ,Click: Click
+                      ,defaultPill: defaultPill
+                      ,defaultPlayer: defaultPlayer
+                      ,defaultGame: defaultGame
+                      ,newPill: newPill
+                      ,stepPlay: stepPlay
+                      ,clickStart: clickStart
+                      ,stepGame: stepGame
+                      ,stepPill: stepPill
+                      ,stepPlayer: stepPlayer
+                      ,tf: tf
+                      ,render: render
                       ,main: main};
    return _elm.Game.values;
 };

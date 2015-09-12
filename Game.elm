@@ -13,7 +13,7 @@ import Signal exposing ((<~), (~), sampleOn, foldp)
 import Time exposing (..)
 
 -- CONFIG
-speed             = 300
+speed             = 500
 boardSize         = 600
 pillSize          = 15
 playerSize        = pillSize

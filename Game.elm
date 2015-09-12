@@ -13,8 +13,6 @@ import Time exposing (..)
 
 (bWidth, bHeight) = (400, 400)
 (hWidth, hHeight) = (bWidth / 2, bHeight / 2)
-delta = fps 60
-interval = every (second * 2)
 
 type alias Vec = (Float, Float)
 type alias Pill = { pos : Vec
@@ -38,9 +36,8 @@ defaultPlayer = { defaultPill | pos <- (0,0)
 defaultGame = { player = defaultPlayer
               , pills = [] }
 
-newPill : Float -> Color -> Pill
-newPill x col = { defaultPill | color <- col
-                              , pos <- (x, hHeight) }
+newPill : Float -> Pill
+newPill x = { defaultPill | pos <- (x, hHeight) }
 
 stepGame : Event -> Game -> Game
 stepGame event ({player, pills} as g) =
@@ -91,29 +88,21 @@ render (w, h) game =
     <| collage bWidth bHeight forms
 
 
+delta = fps 60
 input = (,)
         <~ Signal.map inSeconds delta
         ~ sampleOn delta
             (Signal.map2 relativeMouse
               Mouse.position (Signal.map center Window.dimensions))
 
-randX : Signal Float -> Signal Float
-randX sig =
-  let coord t = seedFromTime t |> Random.float -hWidth hWidth |> Random.generate |> fst
+randx : Signal Float -> Signal Float
+randx sig =
+  let coord x = fst <| Random.generate (Random.float -hWidth hWidth) (Random.initialSeed <| round x)
   in Signal.map coord sig
-
---randColor : Signal Float -> Signal Color
-randColor sig =
-  let chooseColor i = if i == 1 then lightBlue else defaultPill.color
-      color t = seedFromTime t |> Random.int 1 10 |> Random.generate |> fst |> chooseColor
-  in Signal.map color sig
-
-seedFromTime : Time -> Random.Seed
-seedFromTime t = Random.initialSeed <| round t
 
 
 event = Signal.merge (Signal.map Tick input)
-                     (Signal.map2 (\x col -> Add <| newPill x col) (randX interval) (randColor interval))
+                     (Signal.map (Add << newPill) <| randx (every (second * 2)))
 
 main =
   render

@@ -99,7 +99,7 @@ input = (,)
 
 randX : Signal Float -> Signal Float
 randX sig =
-  let coord t = fstseedFromTime t |> Random.float -hWidth hWidth |> Random.generate
+  let coord t = seedFromTime t |> Random.float -hWidth hWidth |> Random.generate |> fst
   in Signal.map coord sig
 
 --randColor : Signal Float -> Signal Color

@@ -770,7 +770,9 @@ Elm.Game.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm),
    $Time = Elm.Time.make(_elm),
    $Window = Elm.Window.make(_elm);
-   var delta = $Time.fps(60);
+   var seedFromTime = function (t) {
+      return $Random.initialSeed($Basics.round(t));
+   };
    var center = function (_v0) {
       return function () {
          switch (_v0.ctor)
@@ -779,7 +781,7 @@ Elm.Game.make = function (_elm) {
                    ,_0: _v0._0 / 2 | 0
                    ,_1: _v0._1 / 2 | 0};}
          _U.badCase($moduleName,
-         "on line 77, column 18 to 32");
+         "on line 79, column 18 to 32");
       }();
    };
    var relativeMouse = F2(function (_v4,
@@ -794,30 +796,12 @@ Elm.Game.make = function (_elm) {
                            ,_0: _v4._0 - _v5._0
                            ,_1: 0 - (_v4._1 - _v5._1)};}
                  _U.badCase($moduleName,
-                 "on line 74, column 34 to 51");
+                 "on line 76, column 34 to 51");
               }();}
          _U.badCase($moduleName,
-         "on line 74, column 34 to 51");
+         "on line 76, column 34 to 51");
       }();
    });
-   var input = A2($Signal._op["~"],
-   A2($Signal._op["<~"],
-   F2(function (v0,v1) {
-      return {ctor: "_Tuple2"
-             ,_0: v0
-             ,_1: v1};
-   }),
-   A2($Signal.map,
-   $Time.inSeconds,
-   delta)),
-   A2($Signal.sampleOn,
-   delta,
-   A3($Signal.map2,
-   relativeMouse,
-   $Mouse.position,
-   A2($Signal.map,
-   center,
-   $Window.dimensions))));
    var vecMulS = F2(function (_v12,
    t) {
       return function () {
@@ -827,7 +811,7 @@ Elm.Game.make = function (_elm) {
                    ,_0: _v12._0 * t
                    ,_1: _v12._1 * t};}
          _U.badCase($moduleName,
-         "on line 71, column 20 to 32");
+         "on line 73, column 20 to 32");
       }();
    });
    var vecLen = function (_v16) {
@@ -836,7 +820,7 @@ Elm.Game.make = function (_elm) {
          {case "_Tuple2":
             return $Basics.sqrt(_v16._0 * _v16._0 + _v16._1 * _v16._1);}
          _U.badCase($moduleName,
-         "on line 68, column 16 to 35");
+         "on line 70, column 16 to 35");
       }();
    };
    var vecSub = F2(function (_v20,
@@ -851,10 +835,10 @@ Elm.Game.make = function (_elm) {
                            ,_0: _v20._0 - _v21._0
                            ,_1: _v20._1 - _v21._1};}
                  _U.badCase($moduleName,
-                 "on line 65, column 29 to 45");
+                 "on line 67, column 29 to 45");
               }();}
          _U.badCase($moduleName,
-         "on line 65, column 29 to 45");
+         "on line 67, column 29 to 45");
       }();
    });
    var vecAdd = F2(function (_v28,
@@ -869,10 +853,10 @@ Elm.Game.make = function (_elm) {
                            ,_0: _v28._0 + _v29._0
                            ,_1: _v28._1 + _v29._1};}
                  _U.badCase($moduleName,
-                 "on line 62, column 29 to 45");
+                 "on line 64, column 29 to 45");
               }();}
          _U.badCase($moduleName,
-         "on line 62, column 29 to 45");
+         "on line 64, column 29 to 45");
       }();
    });
    var stepPlayer = F2(function (_v36,
@@ -886,7 +870,7 @@ Elm.Game.make = function (_elm) {
                                 ,_1: $Basics.toFloat(_v36._1)}]],
               p);}
          _U.badCase($moduleName,
-         "on line 59, column 22 to 59");
+         "on line 61, column 22 to 59");
       }();
    });
    var stepPill = F2(function (t,
@@ -918,6 +902,26 @@ Elm.Game.make = function (_elm) {
              ,rad: c
              ,vel: b};
    });
+   var delta = $Time.fps(60);
+   var input = A2($Signal._op["~"],
+   A2($Signal._op["<~"],
+   F2(function (v0,v1) {
+      return {ctor: "_Tuple2"
+             ,_0: v0
+             ,_1: v1};
+   }),
+   A2($Signal.map,
+   $Time.inSeconds,
+   delta)),
+   A2($Signal.sampleOn,
+   delta,
+   A3($Signal.map2,
+   relativeMouse,
+   $Mouse.position,
+   A2($Signal.map,
+   center,
+   $Window.dimensions))));
+   var interval = $Time.every($Time.second * 2);
    var $ = {ctor: "_Tuple2"
            ,_0: 400
            ,_1: 400},
@@ -944,6 +948,22 @@ Elm.Game.make = function (_elm) {
    var defaultGame = {_: {}
                      ,pills: _L.fromArray([])
                      ,player: defaultPlayer};
+   var randColor = function (sig) {
+      return function () {
+         var getColor = function (i) {
+            return _U.eq(i,
+            1) ? $Color.lightBlue : defaultPill.color;
+         };
+         var color = function (t) {
+            return getColor($Basics.fst($Random.generate(A2($Random.$int,
+            1,
+            10))(seedFromTime(t))));
+         };
+         return A2($Signal.map,
+         color,
+         sig);
+      }();
+   };
    var newPill = function (x) {
       return _U.replace([["pos"
                          ,{ctor: "_Tuple2"
@@ -997,18 +1017,16 @@ Elm.Game.make = function (_elm) {
                       }();}
                  break;}
             _U.badCase($moduleName,
-            "between lines 44 and 52");
+            "between lines 46 and 54");
          }();
       }();
    });
-   var randx = function (sig) {
+   var randX = function (sig) {
       return function () {
-         var coord = function (x) {
-            return $Basics.fst(A2($Random.generate,
-            A2($Random.$float,
+         var coord = function (t) {
+            return $Basics.fst($Random.generate(A2($Random.$float,
             0 - hWidth,
-            hWidth),
-            $Random.initialSeed($Basics.round(x))));
+            hWidth))(seedFromTime(t)));
          };
          return A2($Signal.map,
          coord,
@@ -1019,7 +1037,7 @@ Elm.Game.make = function (_elm) {
    A2($Signal.map,Tick,input),
    $Signal.map(function ($) {
       return Add(newPill($));
-   })(randx($Time.every($Time.second * 2))));
+   })(randX(interval)));
    var render = F2(function (_v49,
    game) {
       return function () {
@@ -1045,7 +1063,7 @@ Elm.Game.make = function (_elm) {
                  forms))));
               }();}
          _U.badCase($moduleName,
-         "between lines 81 and 88");
+         "between lines 83 and 90");
       }();
    });
    var main = A2($Signal._op["~"],
@@ -1061,6 +1079,8 @@ Elm.Game.make = function (_elm) {
                       ,bWidth: bWidth
                       ,hHeight: hHeight
                       ,hWidth: hWidth
+                      ,interval: interval
+                      ,delta: delta
                       ,Pill: Pill
                       ,Game: Game
                       ,Tick: Tick
@@ -1079,9 +1099,10 @@ Elm.Game.make = function (_elm) {
                       ,relativeMouse: relativeMouse
                       ,center: center
                       ,render: render
-                      ,delta: delta
                       ,input: input
-                      ,randx: randx
+                      ,randX: randX
+                      ,randColor: randColor
+                      ,seedFromTime: seedFromTime
                       ,event: event
                       ,main: main};
    return _elm.Game.values;
